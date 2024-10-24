@@ -44,6 +44,22 @@ app.get("/Listings/:id", async (req,res)=>{
 });
 
 
+//Create Route
+/* Get location image etc from req.body.listing
+new Listing() create a new model instance of it by giving a (listing) you can put newListing(new.ejs) to our model and from that they directly save to our main model 
+*/
+app.post("/listings", async (req, res) => {
+    const newListing = new Listing(req.body.listing);
+    try {
+        await newListing.save();
+        res.redirect("/listings");
+    } catch (error) {
+        console.error(error);
+        res.status(400).render("yourErrorTemplate", { error: error.message }); // create a (yourErrorTemplate) 
+    }
+});
+
+
 
 // app.get("/testListing",(req,res)=>{
 
