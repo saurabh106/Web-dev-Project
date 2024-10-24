@@ -55,7 +55,7 @@ app.post("/listings", async (req, res) => {
         res.redirect("/listings");
     } catch (error) {
         console.error(error);
-        res.status(400).render("yourErrorTemplate", { error: error.message }); // create a (yourErrorTemplate) 
+        res.status(400).render("yourErrorTemplate", { error: error.message }); // create a (yourErrorTemplate) to print the error
     }
 });
 
