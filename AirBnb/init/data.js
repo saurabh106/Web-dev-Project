@@ -348,8 +348,5 @@ const sampleListings = [
       country: "Costa Rica",
     },
   ];
-  
-//   listing.image = JSON.stringify(imageObject);
-// await listing.save();
 
   module.exports = { data: sampleListings };
