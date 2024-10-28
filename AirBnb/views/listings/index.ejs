@@ -4,6 +4,21 @@
     <!-- <form action="/listings/new" method="get">
         <button>Create New Listings</button>
     </form> -->
+    <% for(let listing of allListings){ %>
+    <div class="card" style="width: 18rem;">
+        <img src="<%= listing.image && listing.image.url ? listing.image.url : 'https://images.unsplash.com/photo-1496483648148-47c686dc86a8' %>" 
+
+        class="card-img-top" alt="listing_image">
+   
+        <div class="card-body">
+          <p class="card-text">
+            <%= listing.title %> <br>
+            <%= listing.price.toLocaleString("en-IN") %> 
+
+            </p>
+        </div>
+      </div>
+      <% } %>
     <ul>
         <% for(let listing of allListings){ %>
          <li><a href="/listings/<%= listing._id %>"><%= listing.title %></a></li>
