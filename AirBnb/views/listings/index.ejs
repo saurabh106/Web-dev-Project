@@ -1,27 +1,31 @@
 <% layout("/layouts/boilerplate") -%>
-<body>
+
+  <body>
     <h3>All Listings</h3>
     <!-- <form action="/listings/new" method="get">
         <button>Create New Listings</button>
     </form> -->
-    <% for(let listing of allListings){ %>
-    <div class="card" style="width: 18rem;">
-        <img src="<%= listing.image && listing.image.url ? listing.image.url : 'https://images.unsplash.com/photo-1496483648148-47c686dc86a8' %>" 
-
-        class="card-img-top" alt="listing_image">
-   
-        <div class="card-body">
-          <p class="card-text">
-            <%= listing.title %> <br>
-            <%= listing.price.toLocaleString("en-IN") %> 
-
+    <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm">
+      <% for(let listing of allListings){ %>
+        <a href="/listings/<%= listing._id %>" class="listing-link">
+        <div class="card col">
+          <img
+            src="<%= listing.image && listing.image.url ? listing.image.url : 'https://images.unsplash.com/photo-1496483648148-47c686dc86a8' %>"
+            class="card-img-top" alt="listing_image" style="height: 20rem;">
+<div class="card-img-overlay">
+</div>
+          <div class="card-body">
+            <p class="card-text">
+              <b>
+                <%= listing.title %>
+              </b><br>
+              <%= listing.price.toLocaleString("en-IN") %> / night
             </p>
+          </div>
         </div>
-      </div>
-      <% } %>
-    <ul>
-        <% for(let listing of allListings){ %>
-         <li><a href="/listings/<%= listing._id %>"><%= listing.title %></a></li>
+      </a>
         <% } %>
-    </ul>
-</body>
+
+    </div>
+
+  </body>
