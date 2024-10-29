@@ -16,8 +16,8 @@ const ListingSchema = new Schema({
         },
         url: {
             type: String,
-            default: "https://unsplash.com/photos/the-sun-is-shining-over-the-water-and-rocks-CIuhewxFdxU", // URL of your default image
-            set: v => v === "" ? "https://unsplash.com/photos/the-sun-is-shining-over-the-water-and-rocks-CIuhewxFdxU" : v
+            default: "https://images.unsplash.com/photo-1496483648148-47c686dc86a8", // URL of your default image
+            set: v => v === "" ? "https://images.unsplash.com/photo-1496483648148-47c686dc86a8" : v
         }
     },
     country: String

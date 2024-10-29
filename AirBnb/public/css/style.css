@@ -1,6 +1,12 @@
+body {
+    font-family: "Plus Jakarta Sans", sans-serif !important;
+    display: flex;
+    flex-direction: column;
+    min-width: 100vh;
+}
 
-body{
-font-family: "Plus Jakarta Sans",sans-serif !important;
+.container {
+    flex: 1;
 }
 
 .navbar {
@@ -16,6 +22,7 @@ font-family: "Plus Jakarta Sans",sans-serif !important;
 .nav-link {
     color: #222222 !important;
 }
+
 footer {
     background-color: #ebebeb;
     display: flex;
@@ -66,19 +73,22 @@ footer {
     border: none !important;
     margin-bottom: 2rem;
 }
-.card-img-top{
+
+.card-img-top {
     border-radius: 1rem !important;
     width: 100% !important;
     object-fit: cover !important;
 }
-.card-body{
+
+.card-body {
     padding: 0 !important;
 }
+
 .card-text p {
     font-weight: 400;
 }
 
-.listing-link{
+.listing-link {
     text-decoration: none;
 }
 
@@ -86,7 +96,35 @@ footer {
 .card-img-overlay {
     opacity: 0;
 }
-.card-img-overlay:hover{
+
+.card-img-overlay:hover {
     opacity: 0.2;
     background-color: white;
+}
+
+/* New Page */
+.add-btn {
+    background-color: #fe424d !important;
+    border: none !important;
+}
+
+/* Edit Page */
+.edit-btn{
+    background-color: #fe424d !important;
+    border: none !important;
+}
+
+/* Show Page */
+.show-img{
+    height: 30vh;
+}
+.btns{
+    display: flex ;
+
+
+}
+
+.show-card{
+    padding-left: 0;
+    padding-right: 0;
 }
