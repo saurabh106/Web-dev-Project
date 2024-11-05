@@ -54,13 +54,10 @@ And Also created a normal try catch to display the error
 */
 app.post("/listings", async (req, res) => {
     const newListing = new Listing(req.body.listing);
-    try {
+  
         await newListing.save();
         res.redirect("/listings");
-    } catch (error) {
-        console.error(error);
-        res.status(400).render("yourErrorTemplate", { error: error.message }); // create a (yourErrorTemplate) to print the error
-    }
+   
 });
 
 //Edit route
@@ -88,9 +85,6 @@ app.delete("/listings/:id", async(req,res)=>{
     res.redirect("/listings");
 });
  
-
-// app.get("/testListing",(req,res)=>{
-// })
 
 app.listen(8080, () => {
     console.log("Server is Listening to port 8080");

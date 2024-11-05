@@ -4,7 +4,6 @@ const Schema = mongoose.Schema;
 const ListingSchema = new Schema({
     title: {
         type: String,
-        required: true
     },
     description: String,
     price: Number,
