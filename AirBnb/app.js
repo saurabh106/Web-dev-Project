@@ -5,6 +5,7 @@ const Listing = require("./models/listings")
 const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
+const wrapAsync = require("./utils/wrapAsync")
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 
@@ -22,10 +23,10 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
-app.engine("ejs",ejsMate);
-app.use(express.static(path.join(__dirname,"/public")));
+app.engine("ejs", ejsMate);
+app.use(express.static(path.join(__dirname, "/public")));
 
-app.get("/", (req, res) => { 
+app.get("/", (req, res) => {
     res.send("I am a Rott");
 });
 
@@ -52,13 +53,13 @@ app.get("/Listings/:id", async (req, res) => {
 new Listing() create a new model instance of it by giving a (listing) you can put newListing(new.ejs) to our model and from that they directly save to our main model 
 And Also created a normal try catch to display the error
 */
-app.post("/listings", async (req, res) => {
-    const newListing = new Listing(req.body.listing);
-  
+app.post("/listings", wrapAsync( async (req, res, next) => {
+    
+        const newListing = new Listing(req.body.listing);
         await newListing.save();
         res.redirect("/listings");
-   
-});
+})
+);
 
 //Edit route
 //  When you click on Edit btn(having btn in show.ejs )the form will open to edit content
@@ -78,13 +79,24 @@ app.put("/listings/:id", async (req, res) => {
 });
 
 //Delete Route
-app.delete("/listings/:id", async(req,res)=>{
+app.delete("/listings/:id", async (req, res) => {
     let { id } = req.params;
     let deletedListing = await Listing.findByIdAndDelete(id);
     console.log(deletedListing);
     res.redirect("/listings");
 });
- 
+
+
+// Basic Middlewares - if you want to use M then (async have req,res,next) . when you called next then only for that route if error occur then M will Occur !
+app.use((err, req, res, next) => {
+    res.send("Something went wrong");
+});
+
+
+
+
+
+
 
 app.listen(8080, () => {
     console.log("Server is Listening to port 8080");
