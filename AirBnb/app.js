@@ -35,8 +35,8 @@ app.get("/", (req, res) => {
 
 const validateListing = (req, res, next) => {
     let { error } = listingSchema.validate(req.body);
- if (error) {
-    let errMsg = error.details.map((el) => el.message).join(",");
+    if (error) {
+        let errMsg = error.details.map((el) => el.message).join(",");
         throw new ExpressError(400, errMsg);  // Pass error to ExpressError
     } else {
         next();
@@ -69,7 +69,7 @@ new Listing() create a new model instance of it by giving a (listing) you can pu
 And Also created a normal try catch to display the error
 */
 app.post("/listings", validateListing, wrapAsync(async (req, res, next) => {
-    
+
     const newListing = new Listing(req.body.listing);
     await newListing.save();
     res.redirect("/listings");
@@ -86,8 +86,8 @@ app.get("/listings/:id/edit", wrapAsync(async (req, res) => {
 
 //Update Route
 //After fill the form click on edit btn then the update will done redirect to that page
-app.put("/listings/:id",validateListing, wrapAsync(async (req, res) => {
-    
+app.put("/listings/:id", validateListing, wrapAsync(async (req, res) => {
+
     let { id } = req.params;
     await Listing.findByIdAndUpdate(id, { ...req.body.listing }); //{ ...req.body.listing } uses the spread syntax to unpack the listing object from req.body. 
     //This assumes req.body contains a listing object with the updated properties for the listing, such as title, description, or price
@@ -114,7 +114,6 @@ app.use((err, req, res, next) => {
     res.status(statusCode).render("Error.ejs", { err });
     // res.status(statusCode).send(message);
 });
-
 
 app.listen(8080, () => {
     console.log("Server is Listening to port 8080");
