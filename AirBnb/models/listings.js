@@ -16,7 +16,7 @@ const ListingSchema = new Schema({
         url: {
             type: String,
             default: "https://images.unsplash.com/photo-1496483648148-47c686dc86a8", // URL of your default image
-            set: v => v === "" ? "https://images.unsplash.com/photo-1496483648148-47c686dc86a8" : v
+            set: v => v === "" ? "https://images.unsplash.com/photo-1496483648148-47c686dc86a8" : v  // Ternay opertors to set default images;
         }
     },
     country: String
