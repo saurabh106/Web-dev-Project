@@ -19,7 +19,13 @@ const ListingSchema = new Schema({
             set: v => v === "" ? "https://images.unsplash.com/photo-1496483648148-47c686dc86a8" : v  // Ternay opertors to set default images;
         }
     },
-    country: String
+    country: String,
+    reviews: [
+        {
+      type: Schema.Types.ObjectId,
+      ref:"Reviews"
+    }
+]
 });
 
 const Listing = mongoose.model("Listing", ListingSchema);
