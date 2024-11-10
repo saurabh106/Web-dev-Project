@@ -23,9 +23,9 @@ const ListingSchema = new Schema({
     reviews: [
         {
       type: Schema.Types.ObjectId,
-      ref:"Reviews"
-    }
-]
+      ref:"Review"
+    },
+],
 });
 
 const Listing = mongoose.model("Listing", ListingSchema);
