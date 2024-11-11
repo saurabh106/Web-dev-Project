@@ -8,6 +8,7 @@ const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utils/wrapAsync");
 const ExpressError = require("./utils/ExpressError");
 const { listingSchema } = require("./schema");
+const Review = require("./models/review");
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 
@@ -101,6 +102,24 @@ app.delete("/listings/:id", wrapAsync(async (req, res) => {
     console.log(deletedListing);
     res.redirect("/listings");
 }));
+
+// Review
+// Post Route
+app.post("/listings/:id/reviews" , async (req,res)=>{
+  let listing  = await Listing.findById(req.params.id);  // find Id 
+  let newReview = new Review(req.body.review); // Create a newReview
+
+  listing.reviews.push(newReview); // Push new review in main listing
+
+  await newReview.save(); // To save in databases
+  await listing.save();  // To save in databases
+
+//   console.log("New Review Saved"); 
+//   res.send("New Review Saved");
+res.redirect(`/listings/${listing._id}`); 
+});
+
+
 
 //For all route -  whose route that does not exist in our app 
 app.all("*", (req, res, next) => {
