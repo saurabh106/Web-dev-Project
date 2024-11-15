@@ -6,6 +6,11 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const ExpressError = require("./utils/ExpressError");
 
+// Using Sessions now
+const session = require("express-session");
+//Now using Flash , is like a alert or mes that appper once only after refresh they disapper
+const flash = require("connect-flash");
+
 
 //For restructuring code you created a listing.js / review.js new file in router that require here and use for routes
 const listings = require("./routes/listing");
@@ -27,12 +32,41 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
-app.engine("ejs", ejsMate);
+app.engine("ejs", ejsMate); // includes folder to create template and use everywhere ex:<%- include("../includes/footer.ejs") %> That how you can write and use it
 app.use(express.static(path.join(__dirname, "/public")));
+
+
+const sessionOptions = {
+    secret : "mysupersecretcode",
+    resave:false,
+    saveUninitialized: true,
+    cookie:{
+        expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+    },
+};
+
 
 app.get("/", (req, res) => {
     res.send("Nothing to see here !!");
 });
+
+
+// That how you use seesions
+app.use(session(sessionOptions));
+//Using flash -> write before route bcz we need to display message !
+app.use(flash());
+
+
+// we can define flash by using key : msg pair
+//create a middlewares for flash to store in locals we can access in any route or use in any template or create a variable to save it
+app.use((req,res,next)=>{
+    res.locals.success = req.flash("success");
+    // console.log(res.locals.success);
+    next();
+});
+
 
 // For restructing code this coming from listing.js in routes folder 
 app.use("/listings", listings);  // common route name is /listings

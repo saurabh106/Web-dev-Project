@@ -54,9 +54,11 @@ router.post("/", validateListing, wrapAsync(async (req, res, next) => {
 
     const newListing = new Listing(req.body.listing);
     await newListing.save();
+    req.flash("success", "New Listings created! "); // Flash to display popUp msg / alerts ,,The route wheere redirected there only flash msg display.
     res.redirect("/listings");
 })
 );
+
 
 //Edit route
 //  When you click on Edit btn(having btn in show.ejs )the form will open to edit content
@@ -66,6 +68,7 @@ router.get("/:id/edit", wrapAsync(async (req, res) => {
     res.render("listings/edit.ejs", { listing });
 }));
 
+
 //Update Route
 //After fill the form click on edit btn then the update will done redirect to that page
 router.put("/:id", validateListing, wrapAsync(async (req, res) => {
@@ -73,14 +76,18 @@ router.put("/:id", validateListing, wrapAsync(async (req, res) => {
     let { id } = req.params;
     await Listing.findByIdAndUpdate(id, { ...req.body.listing }); //{ ...req.body.listing } uses the spread syntax to unpack the listing object from req.body. 
     //This assumes req.body contains a listing object with the updated properties for the listing, such as title, description, or price
+
+    req.flash("success", "Listing updated! "); // Flash to display popUp msg / alerts ,,The route wheere redirected there only flash msg display.
     res.redirect(`/listings/${id}`);
 }));
+
 
 //Delete Route
 router.delete("/:id", wrapAsync(async (req, res) => {
     let { id } = req.params;
     let deletedListing = await Listing.findByIdAndDelete(id);
-    console.log(deletedListing);
+    console.log(deletedListing); // Delete listing display on terminal
+    req.flash("success", "Listing Deleted"); // Flash to display popUp msg / alerts
     res.redirect("/listings");
 }));
 
