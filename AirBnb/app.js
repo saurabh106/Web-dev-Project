@@ -63,6 +63,7 @@ app.use(flash());
 //create a middlewares for flash to store in locals we can access in any route or use in any template or create a variable to save it
 app.use((req,res,next)=>{
     res.locals.success = req.flash("success");
+    res.locals.error = req.flash("error");
     // console.log(res.locals.success);
     next();
 });
