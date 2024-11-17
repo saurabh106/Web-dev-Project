@@ -12,6 +12,8 @@ const session = require("express-session");
 const flash = require("connect-flash");
 
 
+
+
 //For restructuring code you created a listing.js / review.js new file in router that require here and use for routes
 const listings = require("./routes/listing");
 const reviews = require("./routes/review");
