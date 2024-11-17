@@ -1,5 +1,5 @@
 // This folders and this file is use to restructure our code 
-// listings related route add here and exports and use in router.js
+// listings related route add here and exports and use in app.js
 
 
 // Change the Path bcz we are in routes(router) review.js  

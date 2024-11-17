@@ -11,12 +11,16 @@ const session = require("express-session");
 //Now using Flash , is like a alert or mes that appper once only after refresh they disapper
 const flash = require("connect-flash");
 
-
+//For authentication
+const passport = require("passport"); //passport also use session 
+const LocalStrategy = require("passport-local");
+const User = require("./models/user");
 
 
 //For restructuring code you created a listing.js / review.js new file in router that require here and use for routes
-const listings = require("./routes/listing");
-const reviews = require("./routes/review");
+const listingRouter = require("./routes/listing");
+const reviewRouter = require("./routes/review");
+const userRouter = require("./routes/user");
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 
@@ -39,10 +43,10 @@ app.use(express.static(path.join(__dirname, "/public")));
 
 
 const sessionOptions = {
-    secret : "mysupersecretcode",
-    resave:false,
+    secret: "mysupersecretcode",
+    resave: false,
     saveUninitialized: true,
-    cookie:{
+    cookie: {
         expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
         maxAge: 7 * 24 * 60 * 60 * 1000,
         httpOnly: true,
@@ -61,9 +65,23 @@ app.use(session(sessionOptions));
 app.use(flash());
 
 
+app.use(passport.initialize());
+app.use(passport.session());
+
+//By using this the all user autheenticate by (new LocalStrategy) to do this method name is (authenticate :login / signup );
+passport.use(new LocalStrategy(User.authenticate()));
+
+
+// serializeUser means user info store in the sessions
+passport.serializeUser(User.serializeUser());
+//When user over seesions then deserializeUser there info
+passport.deserializeUser(User.deserializeUser());
+
+
+
 // we can define flash by using key : msg pair
 //create a middlewares for flash to store in locals we can access in any route or use in any template or create a variable to save it
-app.use((req,res,next)=>{
+app.use((req, res, next) => {
     res.locals.success = req.flash("success");
     res.locals.error = req.flash("error");
     // console.log(res.locals.success);
@@ -71,10 +89,25 @@ app.use((req,res,next)=>{
 });
 
 
+// To create a fakeUser adn added in db
+app.get("/demouser", async (req, res) => {
+    let fakeUser = new User({
+        email: "student@gmail.com",
+        username: "student"
+    });
+    //register is a static method that use to save it in this para(user,"password") already check this is user / pw is unique or not
+    // passport-local-mongoose use there own hash function pbkdf2 algo
+    let registeredUser = await User.register(fakeUser, "helloworld");
+    res.send(registeredUser);
+});
+
+
 // For restructing code this coming from listing.js in routes folder 
-app.use("/listings", listings);  // common route name is /listings
+app.use("/listings", listingRouter);  // common route name is /listings
 // For restructing code this coming from review.js in routes folder 
-app.use("/listings/:id/reviews", reviews); ///listings/:id/review
+app.use("/listings/:id/reviews", reviewRouter); ///listings/:id/review
+// USer router for signup 
+app.use("/", userRouter);
 
 
 //For all route -  whose route that does not exist in our app 
