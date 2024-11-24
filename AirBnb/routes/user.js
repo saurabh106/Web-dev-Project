@@ -18,22 +18,43 @@ router.post("/signup", wrapAsync(async (req, res) => {
         const newUser = new User({ email, username });
         const registeredUser = await User.register(newUser, password);
         console.log(registeredUser);
-        req.flash("sucess", "Welcome to wanderlust!");
-        res.redirect("/listings");
+        //This login function use to uses to When signup automatically login in user  also they also taking some parameters
+        req.login(registeredUser, (err) => {
+            if (err) {
+                return next(err);
+            }
+            req.flash("sucess", "Welcome to wanderlust!");
+            res.redirect("/listings");
+        })
     } catch (e) {
         req.flash("error", e.message);
         res.redirect("/signup");
     }
 }));
 
-router.get("/login", (req,res)=>{
+
+router.get("/login", (req, res) => {
     res.render("users/login.ejs");
 });
 
-router.post("/login", passport.authenticate("local",{failureRedirect: '/login',failureFlash:true}) ,async(req,res)=>{
-req.flash("success","Welcome back to Wanderlust !");
-res.redirect("/listings");
+router.post("/login", passport.authenticate("local", { failureRedirect: '/login', failureFlash: true }), async (req, res) => {
+    req.flash("success", "Welcome back to Wanderlust !");
+    res.redirect("/listings");
 });
+
+
+
+//For logout we use req.logout already have a function of passport
+//they use serializeUser and deserializeUser for doing logout passing with some callbacks
+router.get("/logout", (req, res) => {
+    req.logout((err) => {
+        if (err) {
+            return next(err);
+        }
+        req.flash("success", "you are logged out!");
+        res.redirect("/listings");
+    });
+})
 
 
 

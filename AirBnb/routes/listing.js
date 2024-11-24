@@ -7,11 +7,15 @@ const router = express.Router();
 const wrapAsync = require("../utils/wrapAsync");
 const ExpressError = require("../utils/ExpressError");
 const { listingSchema} = require("../schema");
-const Listing = require("../models/listings")
+const Listing = require("../models/listings");
+
+//This is for authentication is user logged in or not 
+const {isLoggedIn} = require("../middleware");
 
 
 //This is for error handlings
 // This is for create route 
+// This is for error handlings showing what is error if error occur than the custom class error was through
 const validateListing = (req, res, next) => {
     let { error } = listingSchema.validate(req.body);
     if (error) {
@@ -32,8 +36,10 @@ router.get("/", wrapAsync(async (req, res) => {
     res.render("listings/index", { allListings });
 }));
 
+
 //New Route
-router.get("/new", (req, res) => {
+router.get("/new",isLoggedIn, (req, res) => {
+  
     res.render("listings/new.ejs")
 });
 
@@ -54,7 +60,7 @@ router.get("/:id", wrapAsync(async (req, res) => {
 new Listing() create a new model instance of it by giving a (listing) you can put newListing(new.ejs) to our model and from that they directly save to our main model 
 And Also created a normal try catch to display the error
 */
-router.post("/", validateListing, wrapAsync(async (req, res, next) => {
+router.post("/",isLoggedIn, validateListing, wrapAsync(async (req, res, next) => {
 
     const newListing = new Listing(req.body.listing);
     await newListing.save();
@@ -66,7 +72,7 @@ router.post("/", validateListing, wrapAsync(async (req, res, next) => {
 
 //Edit route
 //  When you click on Edit btn(having btn in show.ejs )the form will open to edit content
-router.get("/:id/edit", wrapAsync(async (req, res) => {
+router.get("/:id/edit",isLoggedIn, wrapAsync(async (req, res) => {
     let { id } = req.params;
     const listing = await Listing.findById(id);
     if(!listing){
@@ -79,7 +85,7 @@ router.get("/:id/edit", wrapAsync(async (req, res) => {
 
 //Update Route
 //After fill the form click on edit btn then the update will done redirect to that page
-router.put("/:id", validateListing, wrapAsync(async (req, res) => {
+router.put("/:id",isLoggedIn, validateListing, wrapAsync(async (req, res) => {
 
     let { id } = req.params;
     await Listing.findByIdAndUpdate(id, { ...req.body.listing }); //{ ...req.body.listing } uses the spread syntax to unpack the listing object from req.body. 
@@ -91,7 +97,7 @@ router.put("/:id", validateListing, wrapAsync(async (req, res) => {
 
 
 //Delete Route
-router.delete("/:id", wrapAsync(async (req, res) => {
+router.delete("/:id",isLoggedIn, wrapAsync(async (req, res) => {
     let { id } = req.params;
     let deletedListing = await Listing.findByIdAndDelete(id);
     console.log(deletedListing); // Delete listing display on terminal

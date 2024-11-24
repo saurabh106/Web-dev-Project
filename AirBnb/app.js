@@ -85,21 +85,9 @@ app.use((req, res, next) => {
     res.locals.success = req.flash("success");
     res.locals.error = req.flash("error");
     // console.log(res.locals.success);
+    res.locals.currUser = req.user; // You created this bcz we can directly access req.user in ejs templates
     next();
 });
-
-
-// // To create a fakeUser adn added in db
-// app.get("/demouser", async (req, res) => {
-//     let fakeUser = new User({
-//         email: "student@gmail.com",
-//         username: "student"
-//     });
-//     //register is a static method that use to save it in this para(user,"password") already check this is user / pw is unique or not
-//     // passport-local-mongoose use there own hash function pbkdf2 algo
-//     let registeredUser = await User.register(fakeUser, "helloworld");
-//     res.send(registeredUser);
-// });
 
 
 // For restructing code this coming from listing.js in routes folder 

@@ -6,11 +6,24 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">
-                <a class="nav-link "  href="/">Home</a>
+                <a class="nav-link " href="/">Home</a>
                 <a class="nav-link" href="/listings">All Listings</a>
                 <a class="nav-link" href="/listings/new">Add New Listing</a>
-               
+
+            </div>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav ms-auto">
+                    <!-- Adding a condition if user was undefined (new in web) then show signup / login btn
+                     if they are login / signup they only show the logout btn -->
+                   <% if(!currUser){ %>   
+                    <!-- So you can access req.user directlyin ejs template use localsave to access it that why the variable name is now currUser(see in app.js) --> 
+                        <a class="nav-link " href="/signup">Signup</a>
+                        <a class="nav-link" href="/login">Log in</a>
+                        <% } %>
+                            <% if(currUser) { %>
+                                <a class="nav-link" href="/logout">Logout</a>
+                                <% } %>
+                </div>
             </div>
         </div>
-    </div>
 </nav>
