@@ -10,4 +10,14 @@ module.exports.isLoggedIn = (req,res,next)=>{
        return  res.redirect("/login");
     }
     next();
+};
+
+
+// When you login -> the passport reset the req.session. that why we nedd to store that in locals
+module.exports.saveRedirect = (req,res,next)=>{
+    if(req.session.redirectUrl){
+        res.locals.redirectUrl = req.session.redirectUrl;
+    }
+    next();
 }
+
