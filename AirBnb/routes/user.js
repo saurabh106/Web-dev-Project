@@ -6,6 +6,7 @@ const router = express.Router();
 const User = require("../models/user");
 const wrapAsync = require("../utils/wrapAsync");
 const passport = require("passport");
+const {saveRedirectUrl} = require("../middleware");
 
 
 router.get("/signup", (req, res) => {
@@ -37,9 +38,12 @@ router.get("/login", (req, res) => {
     res.render("users/login.ejs");
 });
 
-router.post("/login", passport.authenticate("local", { failureRedirect: '/login', failureFlash: true }), async (req, res) => {
+//saveRedirectUrl -> when you login saveRedirectUrl save then only you login using passport then req.session the url deleted then you redirected to req.local.redirectUrl;
+router.post("/login",saveRedirectUrl, passport.authenticate("local", { failureRedirect: '/login', failureFlash: true }), async (req, res) => {
     req.flash("success", "Welcome back to Wanderlust !");
-    res.redirect(req.session.redirectUrl);
+    //saveRedirectUrl -> having one catch if you direct login without go to any route then you can/t redirected to /listings bcz the saveRedirectUrl was not executed that why this condition was created;
+    let redirectUrl = res.locals.redirectUrl || "/listings"
+    res.redirect(redirectUrl);
 });
 
 

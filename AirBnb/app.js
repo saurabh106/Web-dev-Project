@@ -78,7 +78,7 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 
-
+/* Locals are those that use can access everywhere in the projects*/
 // we can define flash by using key : msg pair
 //create a middlewares for flash to store in locals we can access in any route or use in any template or create a variable to save it
 app.use((req, res, next) => {

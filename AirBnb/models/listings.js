@@ -27,13 +27,17 @@ const ListingSchema = new Schema({
             ref: "Review"
         },
     ],
+    owner: {
+        type: Schema.Types.ObjectId,
+        ref: "User"
+    }
 });
 
 //To delete review objectId from listing array
 ListingSchema.post("findOneAndDelete", async (listing) => {
     if (listing) {
         await Review.deleteMany({ _id: { $in: listing.reviews } });
-    }
+    }   
 });
 
 const Listing = mongoose.model("Listing", ListingSchema);
