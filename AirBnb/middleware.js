@@ -1,3 +1,6 @@
+const Listing = require("./models/listings");
+
+
 // This middlewares for to see user authenticated or not 
 
 module.exports.isLoggedIn = (req,res,next)=>{
@@ -21,4 +24,16 @@ module.exports.saveRedirectUrl = (req,res,next)=>{
     next();
 }
 
- 
+
+//This middleware -> if you are the owner then only we can edit / delete listings
+//The use of this 
+module.exports.isOwner = async (req,res,next)=>{
+     let {id} = req.params;
+    //Settings Autorization -> want to see the users who updating listing was there owner or not
+    let listing = await Listing.findById(id);
+    if(!listing.owner.equals(res.locals.currUser._id)){
+        req.flash("error", "You are not the owner of this listing");
+        return res.redirect(`/listings/${id}`);
+    }
+    next();
+};

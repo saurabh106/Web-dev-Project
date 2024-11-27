@@ -9,8 +9,8 @@ const ExpressError = require("../utils/ExpressError");
 const { listingSchema} = require("../schema");
 const Listing = require("../models/listings");
 
-//This is for authentication is user logged in or not 
-const {isLoggedIn} = require("../middleware");
+//This is for authentication is user logged in or not and isOwner is for authorization
+const {isLoggedIn,isOwner} = require("../middleware");
 
 
 //This is for error handlings
@@ -46,6 +46,7 @@ router.get("/new",isLoggedIn, (req, res) => {
 //show route
 router.get("/:id", wrapAsync(async (req, res) => {
     let { id } = req.params;
+    //Use of populate taking ref between collections -> when an listing add there specific reviews also add and now there owner ObjectId also added by using populate()
     const listing = await Listing.findById(id).populate("reviews").populate("owner");
     if(!listing){
         req.flash("error", "Listing you requested for does not exist");
@@ -63,6 +64,8 @@ And Also created a normal try catch to display the error
 router.post("/",isLoggedIn, validateListing, wrapAsync(async (req, res, next) => {
 
     const newListing = new Listing(req.body.listing);
+    //To save owner details when new listing add 
+    newListing.owner = req.user._id; //req.user._id; from this we get current user objectId; -> if i created my username was showing there;
     await newListing.save();
     req.flash("success", "New Listings created! "); // Flash to display popUp msg / alerts ,,The route wheere redirected there only flash msg display.
     res.redirect("/listings");
@@ -72,7 +75,8 @@ router.post("/",isLoggedIn, validateListing, wrapAsync(async (req, res, next) =>
 
 //Edit route
 //  When you click on Edit btn(having btn in show.ejs )the form will open to edit content
-router.get("/:id/edit",isLoggedIn, wrapAsync(async (req, res) => {
+//isOwner is use to see that users have persmission to edit this listings or not
+router.get("/:id/edit",isLoggedIn,isOwner, wrapAsync(async (req, res) => {
     let { id } = req.params;
     const listing = await Listing.findById(id);
     if(!listing){
@@ -85,10 +89,11 @@ router.get("/:id/edit",isLoggedIn, wrapAsync(async (req, res) => {
 
 //Update Route
 //After fill the form click on edit btn then the update will done redirect to that page
-router.put("/:id",isLoggedIn, validateListing, wrapAsync(async (req, res) => {
+//isOwner is use to see that users have persmission to edit this listings or not
+router.put("/:id",isLoggedIn,isOwner, validateListing, wrapAsync(async (req, res) => {
 
     let { id } = req.params;
-    await Listing.findByIdAndUpdate(id, { ...req.body.listing }); //{ ...req.body.listing } uses the spread syntax to unpack the listing object from req.body. 
+   await Listing.findByIdAndUpdate(id, { ...req.body.listing }); //{ ...req.body.listing } uses the spread syntax to unpack the listing object from req.body. 
     //This assumes req.body contains a listing object with the updated properties for the listing, such as title, description, or price
 
     req.flash("success", "Listing updated! "); // Flash to display popUp msg / alerts ,,The route wheere redirected there only flash msg display.
@@ -97,7 +102,8 @@ router.put("/:id",isLoggedIn, validateListing, wrapAsync(async (req, res) => {
 
 
 //Delete Route
-router.delete("/:id",isLoggedIn, wrapAsync(async (req, res) => {
+//isOwner is use to see that users have persmission to edit this listings or not
+router.delete("/:id",isLoggedIn,isOwner, wrapAsync(async (req, res) => {
     let { id } = req.params;
     let deletedListing = await Listing.findByIdAndDelete(id);
     console.log(deletedListing); // Delete listing display on terminal
