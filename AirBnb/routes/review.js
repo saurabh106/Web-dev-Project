@@ -9,29 +9,20 @@ const express = require("express");
 const router = express.Router({ mergeParams: true });
 const wrapAsync = require("../utils/wrapAsync");
 const ExpressError = require("../utils/ExpressError");
-const {reviewSchema } = require("../schema");
+
 const Review = require("../models/review");
-const Listing = require("../models/listings")
+const Listing = require("../models/listings");
+const {validateReview, isLoggedIn} = require("../middleware");
  
-
-//This is for error handlings
-
-const validateReview= (req, res, next) => {
-    let { error } = reviewSchema.validate(req.body);
-    if (error) {
-        let errMsg = error.details.map((el) => el.message).join(",");
-        throw new ExpressError(400, errMsg);  // Pass error to ExpressError
-    } else {
-        next();
-    }
-};
 
 
 // Review Post Route
-router.post("/" ,validateReview,wrapAsync
+router.post("/" ,isLoggedIn,validateReview,wrapAsync
     (async (req, res) => {
   let listing  = await Listing.findById(req.params.id);  // find Id 
   let newReview = new Review(req.body.review); // Create a newReview
+  //To add a suthor of that review
+  newReview.author = req.user._id;
 
   listing.reviews.push(newReview); // Push new review in main listing
 
