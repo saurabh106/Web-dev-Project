@@ -12,7 +12,7 @@ const ExpressError = require("../utils/ExpressError");
 
 const Review = require("../models/review");
 const Listing = require("../models/listings");
-const {validateReview, isLoggedIn} = require("../middleware");
+const {validateReview, isLoggedIn, isReviewAuthor} = require("../middleware");
  
 
 
@@ -37,7 +37,7 @@ res.redirect(`/listings/${listing._id}`);
 
 
 // Delete Review Route
-router.delete("/:reviewId", wrapAsync(async (req,res)=>{
+router.delete("/:reviewId",isLoggedIn,isReviewAuthor, wrapAsync(async (req,res)=>{
     let {id, reviewId} = req.params;
 
 //This is for remove objectId from listing array

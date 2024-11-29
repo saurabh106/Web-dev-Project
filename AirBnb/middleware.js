@@ -1,4 +1,5 @@
 const Listing = require("./models/listings");
+const Review = require("./models/review");
 
 //For validateListing //For validateReview
 const ExpressError = require("./utils/ExpressError");
@@ -70,5 +71,18 @@ module.exports.validateReview = (req, res, next) => {
     } else {
         next();
     }
+};
+
+
+//While deleting review ensure that you are the author of that review if not you can't delete it.
+module.exports.isReviewAuthor = async (req,res,next)=>{
+    let {id,reviewId} = req.params;
+   //Settings Autorization -> want to see the users who updating listing was there owner or not
+   let review = await Review.findById(reviewId);
+   if(!review.author.equals(res.locals.currUser._id)){
+       req.flash("error", "You are not the author of this reviews");
+       return res.redirect(`/listings/${id}`);
+   }
+   next();
 };
 
