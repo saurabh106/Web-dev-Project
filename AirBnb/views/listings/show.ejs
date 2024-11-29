@@ -74,7 +74,13 @@
                         <% for(review of listing.reviews) { %>
                             <div class="card col-5 ms-3 mb-3">
                                 <div class="card-body">
-                                    <h5 class="card-title">Saurabh Phadtare</h5>
+                                    <h5 class="card-title">
+                                        <% if (review.author && review.author.username) { %>
+                                            <%= review.author.username%>  <!-- Access name of the populated author -->
+                                        <% } else { %>
+                                            Unknown Author
+                                        <% } %>
+                                    </h5>
                                     <p class="card-text">
                                         <%= review.comment %>
                                     </p>

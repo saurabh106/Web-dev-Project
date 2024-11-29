@@ -33,12 +33,19 @@ router.get("/new",isLoggedIn, (req, res) => {
 router.get("/:id", wrapAsync(async (req, res) => {
     let { id } = req.params;
     //Use of populate taking ref between collections -> when an listing add there specific reviews also add and now there owner ObjectId also added by using populate()
-    const listing = await Listing.findById(id).populate("reviews").populate("owner");
+    // populate({ path:"reviews",populate:{path:"author",}}) basically every listing come with there reviews also passing one array with reviews passing author also and print in show.ejs
+    const listing = await Listing.findById(id).populate({
+        path: "reviews",
+        populate: {
+            path: "author", 
+            select: "username email"  // This will populate the author field of each review
+        }
+    }).populate("owner");
     if(!listing){
         req.flash("error", "Listing you requested for does not exist");
         res.redirect("/lisitngs");
     }
-    res.render("listings/show.ejs", { listing });
+ res.render("listings/show.ejs", { listing });
 }));
 
 
@@ -98,3 +105,5 @@ router.delete("/:id",isLoggedIn,isOwner, wrapAsync(async (req, res) => {
 }));
 
 module.exports = router;
+
+
