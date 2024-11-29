@@ -14,41 +14,16 @@ const Review = require("../models/review");
 const Listing = require("../models/listings");
 const {validateReview, isLoggedIn, isReviewAuthor} = require("../middleware");
  
+//Controllers
+const reviewController = require("../controllers/reviews");
 
 
-// Review Post Route
-router.post("/" ,isLoggedIn,validateReview,wrapAsync
-    (async (req, res) => {
-  let listing  = await Listing.findById(req.params.id);  // find Id 
-  let newReview = new Review(req.body.review); // Create a newReview
-  //To add a suthor of that review
-  newReview.author = req.user._id;
 
-  listing.reviews.push(newReview); // Push new review in main listing
-
-  await newReview.save(); // To save in databases
-  await listing.save();  // To save in databases
-  req.flash("success","New Review Created"); // Flash to display popUp msg / alerts ,,The route wheere redirected there only flash msg display.
-
-//   console.log("New Review Saved"); 
-//   res.send("New Review Saved");
-res.redirect(`/listings/${listing._id}`); 
-}));
+// Post Review Route
+router.post("/" ,isLoggedIn,validateReview,wrapAsync(reviewController.createReview));
 
 
 // Delete Review Route
-router.delete("/:reviewId",isLoggedIn,isReviewAuthor, wrapAsync(async (req,res)=>{
-    let {id, reviewId} = req.params;
-
-//This is for remove objectId from listing array
-await Listing.findByIdAndUpdate(id, {$pull: {reviews: reviewId}});
-
-
-//From That the review deleted
-    await Review.findByIdAndDelete(reviewId);
-    req.flash("success","Review Deleted"); // Flash to display popUp msg / alerts ,,The route wheere redirected there only flash msg display.
-
-    res.redirect(`/listings/${id}`);
-}));
+router.delete("/:reviewId",isLoggedIn,isReviewAuthor, wrapAsync(reviewController.destroyReview));
 
 module.exports = router;
