@@ -14,6 +14,10 @@ const {isLoggedIn,isOwner,validateListing} = require("../middleware");
 //Controllers
 const listingController = require("../controllers/listings");
 
+//Multer is a node.js middlewares for handling multipart/form-data which is primarliy used for 
+//Uploading Files
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" }); // upload to /uploads/ folder -> Given destination where you want to save files
 
 
 //Combining route fi there pah was same -> using router.route
