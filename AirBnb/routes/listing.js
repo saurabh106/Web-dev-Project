@@ -17,7 +17,13 @@ const listingController = require("../controllers/listings");
 //Multer is a node.js middlewares for handling multipart/form-data which is primarliy used for 
 //Uploading Files
 const multer = require("multer");
-const upload = multer({ dest: "uploads/" }); // upload to /uploads/ folder -> Given destination where you want to save files
+
+//Cloudinary
+const {storage} = require("../cloudConfig");
+
+const upload = multer({storage}); // upload to /uploads/ folder -> Given destination where you want to save files
+
+
 
 
 //Combining route fi there pah was same -> using router.route
@@ -31,7 +37,7 @@ And Also created a normal try catch to display the error
 */
 router.route("/")
 .get( wrapAsync(listingController.index))
-.post(isLoggedIn, validateListing, wrapAsync(listingController.createListing)
+.post(isLoggedIn, upload.single("listing[image]"),validateListing,wrapAsync(listingController.createListing)
 );
 
 

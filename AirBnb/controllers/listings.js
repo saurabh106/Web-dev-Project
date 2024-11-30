@@ -38,9 +38,21 @@ module.exports.showListing = async (req, res) => {
 //Create Route
 module.exports.createListing = async (req, res, next) => {
 
+    if (!req.file) {
+        return res.status(400).send("No file uploaded");
+      }
+    
+
+//To add that coming url in mongodb
+let url = req.file.path;
+let filename = req.file.filename;
+
+
     const newListing = new Listing(req.body.listing);
     //To save owner details when new listing add 
     newListing.owner = req.user._id; //req.user._id; from this we get current user objectId; -> if i created my username was showing there;
+    //To add image name and url in mongodb
+    newListing.image = {url,filename};
     await newListing.save();
     req.flash("success", "New Listings created! "); // Flash to display popUp msg / alerts ,,The route wheere redirected there only flash msg display.
     res.redirect("/listings");
