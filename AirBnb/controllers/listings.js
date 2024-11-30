@@ -13,10 +13,10 @@ module.exports.index = async (req, res) => {
 //New Route
 module.exports.renderNewForm = (req, res) => {
     res.render("listings/new.ejs")
-  };
+};
 
 
-  //show route
+//show route
 module.exports.showListing = async (req, res) => {
     let { id } = req.params;
     //Use of populate taking ref between collections -> when an listing add there specific reviews also add and now there owner ObjectId also added by using populate()
@@ -24,15 +24,15 @@ module.exports.showListing = async (req, res) => {
     const listing = await Listing.findById(id).populate({
         path: "reviews",
         populate: {
-            path: "author", 
+            path: "author",
             select: "username email"  // This will populate the author field of each review
         }
     }).populate("owner");
-    if(!listing){
+    if (!listing) {
         req.flash("error", "Listing you requested for does not exist");
         res.redirect("/lisitngs");
     }
- res.render("listings/show.ejs", { listing });
+    res.render("listings/show.ejs", { listing });
 };
 
 //Create Route
@@ -40,19 +40,19 @@ module.exports.createListing = async (req, res, next) => {
 
     if (!req.file) {
         return res.status(400).send("No file uploaded");
-      }
-    
+    }
 
-//To add that coming url in mongodb
-let url = req.file.path;
-let filename = req.file.filename;
+
+    //To add that coming url in mongodb
+    let url = req.file.path;
+    let filename = req.file.filename;
 
 
     const newListing = new Listing(req.body.listing);
     //To save owner details when new listing add 
     newListing.owner = req.user._id; //req.user._id; from this we get current user objectId; -> if i created my username was showing there;
     //To add image name and url in mongodb
-    newListing.image = {url,filename};
+    newListing.image = { url, filename };
     await newListing.save();
     req.flash("success", "New Listings created! "); // Flash to display popUp msg / alerts ,,The route wheere redirected there only flash msg display.
     res.redirect("/listings");
@@ -62,19 +62,34 @@ let filename = req.file.filename;
 module.exports.renderEditForm = async (req, res) => {
     let { id } = req.params;
     const listing = await Listing.findById(id);
-    if(!listing){
+    if (!listing) {
         req.flash("error", "Listing you requested for does not exist");
         res.redirect("/lisitngs");
     }
-    res.render("listings/edit.ejs", { listing });
+
+    //Original Image
+    let originalImageUrl = listing.image.url;
+    //replace to get preview images
+    originalImageUrl = originalImageUrl.replace("/upload", "/upload/h_300,w_250");
+
+
+    res.render("listings/edit.ejs", { listing, originalImageUrl });
 };
 
 //Update Route
 module.exports.updateListing = async (req, res) => {
 
     let { id } = req.params;
-   await Listing.findByIdAndUpdate(id, { ...req.body.listing }); //{ ...req.body.listing } uses the spread syntax to unpack the listing object from req.body. 
+    let listing = await Listing.findByIdAndUpdate(id, { ...req.body.listing }); //{ ...req.body.listing } uses the spread syntax to unpack the listing object from req.body. 
     //This assumes req.body contains a listing object with the updated properties for the listing, such as title, description, or price
+
+    if (typeof req.file !== "undefined") {
+        //To add that coming url in mongodb
+        let url = req.file.path;
+        let filename = req.file.filename;
+        listing.image = { url, filename };
+        await listing.save();
+    }
 
     req.flash("success", "Listing updated! "); // Flash to display popUp msg / alerts ,,The route wheere redirected there only flash msg display.
     res.redirect(`/listings/${id}`);
