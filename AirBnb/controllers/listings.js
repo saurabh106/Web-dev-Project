@@ -1,8 +1,15 @@
 // So this controller folder is use for to add the core functionality of backend all the routes call back everything
 //Restructing callback and backend core function and data and doing reformatting
 
+const { response } = require("express");
 const Listing = require("../models/listings");
 
+
+//GeoCoding -> Convert location to lat,long using mapbox api-sdk / npm packages
+const mbxGeocoding = require("@mapbox/mapbox-sdk/services/geocoding");
+const mapToken = process.env.MAP_TOKEN;
+//Start the services
+const geocodingClient = mbxGeocoding({ accessToken: mapToken });
 
 //listing Index route logic 
 module.exports.index = async (req, res) => {
@@ -38,12 +45,15 @@ module.exports.showListing = async (req, res) => {
 //Create Route
 module.exports.createListing = async (req, res, next) => {
 
-    if (!req.file) {
-        return res.status(400).send("No file uploaded");
-    }
+    //To get a coords convert into lat lan
+let response = await geocodingClient.forwardGeocode({
+    query: req.body.listing.location,
+    limit: 1
+}).send();
 
 
-    //To add that coming url in mongodb
+   
+  //To add that coming url in mongodb
     let url = req.file.path;
     let filename = req.file.filename;
 
@@ -53,6 +63,8 @@ module.exports.createListing = async (req, res, next) => {
     newListing.owner = req.user._id; //req.user._id; from this we get current user objectId; -> if i created my username was showing there;
     //To add image name and url in mongodb
     newListing.image = { url, filename };
+    //To add geolocation in mongodb -> this value / line come form mapbox
+    newListing.geometry = response.body.features[0].geometry;
     await newListing.save();
     req.flash("success", "New Listings created! "); // Flash to display popUp msg / alerts ,,The route wheere redirected there only flash msg display.
     res.redirect("/listings");
@@ -70,7 +82,7 @@ module.exports.renderEditForm = async (req, res) => {
     //Original Image
     let originalImageUrl = listing.image.url;
     //replace to get preview images
-    originalImageUrl = originalImageUrl.replace("/upload", "/upload/h_300,w_250");
+    originalImageUrl = originalImageUrl.replace("/upload", "/upload/w_250");
 
 
     res.render("listings/edit.ejs", { listing, originalImageUrl });
