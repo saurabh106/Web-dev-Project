@@ -15,6 +15,8 @@ const ExpressError = require("./utils/ExpressError");
 
 // Using Sessions now
 const session = require("express-session");
+//Using Mongo session for production level
+const MongoStore = require("connect-mongo");
 //Now using Flash , is like a alert or mes that appper once only after refresh they disapper
 const flash = require("connect-flash");
 
@@ -29,7 +31,9 @@ const listingRouter = require("./routes/listing");
 const reviewRouter = require("./routes/review");
 const userRouter = require("./routes/user");
 
-const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
+// const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
+//connect to mongodb ATLAS
+const dbUrl = process.env.ATLAS_URL;
 
 main()
     .then(() => {
@@ -39,7 +43,7 @@ main()
     });
 
 async function main() {
-    await mongoose.connect(MONGO_URL);
+    await mongoose.connect(dbUrl);
 }
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -49,8 +53,23 @@ app.engine("ejs", ejsMate); // includes folder to create template and use everyw
 app.use(express.static(path.join(__dirname, "/public")));
 
 
+//Mongo session store
+const store = MongoStore.create({
+    mongoUrl:dbUrl,
+    crypto:{
+        secret: process.env.SECRET,
+    },
+    //Touchafter if u refresh again they save you signup info in session and refresh after 24 hours 
+    touchAfter: 24 * 3600
+});
+
+store.on("error",()=>{
+    console.log("error",err);
+})
+
 const sessionOptions = {
-    secret: "mysupersecretcode",
+    store,
+    secret:process.env.SECRET,
     resave: false,
     saveUninitialized: true,
     cookie: {
@@ -61,9 +80,9 @@ const sessionOptions = {
 };
 
 
-app.get("/", (req, res) => {
-    res.send("Nothing to see here !!");
-});
+// app.get("/", (req, res) => {
+//     res.send("Nothing to see here !!");
+// });
 
 
 // That how you use seesions
